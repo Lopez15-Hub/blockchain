@@ -1,17 +1,79 @@
 import { BlockModel } from './models/block.model.js';
-export class BlockChain {
-    constructor() {
-      this.chain = [this.createGenesisBlock];
+import SHA256 from 'crypto-js/sha256';
+export class Blockchain {
+  constructor() {
+    this.chain = [];
+    this.height = -1;
+    this.initializeChain();
+  }
+
+  createGenesisBlock = () => new BlockModel({data:"Genesis Block"});
+  getLastBlock = () => this.chain[this.chain.length - 1];
+
+
+  async initializeChain() {
+
+    if (this.height == -1) {
+      const block = this.createGenesisBlock();
+      await this.addNewBlock(block)
     }
-  
-    createGenesisBlock = () =>  new BlockModel('01/01/2022', "Genesis block", "0");
-    getLastBlock = () => this.chain[this.chain.length - 1];
-  
-     addNewBlock(newBlock) {
-      newBlock.previousHash =  this.getLastBlock().hash;
-      newBlock.hash =  newBlock.generateHash();
-      this.chain.push(newBlock);
-    }
-  
   }
   
+  addNewBlock(newBlock) { 
+    let self = this;
+
+    return new Promise((resolve, reject) => {
+
+      newBlock.height = self.chain.length;
+      newBlock.timestamp = Date.now();
+      
+      if (self.chain.length > 0) newBlock.previousHash = self.chain[self.chain.length - 1].hash;
+      
+      const errors = self.validateChain();
+      
+      if (errors.length > 0) reject(new Error("The chain is not valid:", errors));
+      
+      
+      newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();
+      self.chain.push(newBlock);
+      
+      resolve(newBlock);
+
+
+    })
+
+  }  
+  validateChain() {
+    let self = this;
+    const errors = [];
+
+    return new Promise(async(resolve, _) => {
+      self.chain.map(async (block) => {
+        try {
+          let isValid = await block.validateBlock();
+          if (!isValid) errors.push(new Error(`Invalid block: ${block}`));
+
+        } catch (error) {
+          errors.push(error);
+        }
+        resolve(errors);
+      })
+    });
+
+
+  }
+
+
+  print(){
+    let self = this;
+
+    for(let block of self.chain){
+
+      console.log(block.toString());
+      
+    }
+  }
+
+
+
+}
