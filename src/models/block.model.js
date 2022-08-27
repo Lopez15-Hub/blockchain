@@ -1,4 +1,4 @@
-import SHA256 from 'crypto-js/sha256';
+const SHA256 = require('crypto-js/sha256');
 
 export class BlockModel {
 
@@ -9,9 +9,8 @@ export class BlockModel {
         this.previousHash = previousHash;
     }
 
-    generateHash = () => SHA256(this.timestamp + this.previousHash, JSON.stringify(this.data)).toString();
+    generateHash = () =>SHA256(this.timestamp + this.previousHash, JSON.stringify()).toString(); 
 
 
 }
-
 

@@ -1,10 +1,9 @@
-export class PersonModel{
-    constructor(name,rut,age,country){
+export class PersonModel {
+    constructor(name, rut, age, country) {
         this.name = name,
-        this.rut = rut,
-        this.age = age,
-        this.country = country
-    
+            this.rut = rut,
+            this.age = age,
+            this.country = country
+
     }
-    createPerson = (name,rut,age,country) => new PersonModel(name,rut,age,country)
 }
