@@ -70,19 +70,20 @@ export class Blockchain {
   }
 
 
-  print() {
+  async print() {
     let self = this;
-
+    console.log("______________________________________________\n");
+    console.log("____________________BLOCKCHAIN DATA__________________\n");
+    console.log("______________________________________________\n");
     for (let block of self.chain) {
 
       console.log(block.toString());
-
-      console.log("______________________________________________\n");
-      console.log("____________________DECRYPTED DATA__________________\n");
-      console.log("______________________________________________\n");
-            
-      console.log(block.decryptData(block));
-
+    }
+    console.log("______________________________________________\n");
+    console.log("____________________DECRYPTED DATA__________________\n");
+    console.log("______________________________________________\n");
+    for (let block of self.chain) {
+      console.log(await block.decryptData(block));
     }
 
   }
