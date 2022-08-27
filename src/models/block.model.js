@@ -8,33 +8,39 @@ export class BlockModel {
         this.height = 0;
         this.previousHash = '';
         this.timestamp = Date.now();
-        this.blockData = Buffer.from(JSON.stringify(blockData).toString("hex"));
+        this.blockData = Buffer.from(JSON.stringify(blockData)).toString("hex");
 
     }
 
-    generateHash =()=> SHA256(JSON.stringify({...self,hash:null})).toString();
+    generateHash = () => SHA256(JSON.stringify({ ...this, hash: null })).toString();
 
-    validateBlock() {
+    validate() {
         const self = this;
         return new Promise( (resolve, _) => {
             let currentHash = self.hash;
 
-            self.hash = self.generateHash(); 
+            self.hash = self.generateHash();
 
             if (currentHash !== self.hash) return resolve(false);
+            
             return resolve(true);
         })
     }
-    getBlockData() {
+
+
+
+    async getData() {
         const self = this;
-        return new Promise(async(resolve, reject) => {
-            let encodedData =  self.blockData;
+        return new Promise(async (resolve, reject) => {
+            let encodedData = self.blockData;
             let decodedData = Buffer.from(encodedData, "hex").toString();
             let dataObject = await JSON.parse(decodedData);
             if (dataObject == "Genesis Block") return reject(new Error("This is the genesis block"));
             resolve(dataObject);
         })
     }
+
+
     toString() {
         const {
             hash,
@@ -53,6 +59,14 @@ export class BlockModel {
         
         `;
     }
+
+    decryptData = async (block) => await block.getData().then( (blockData) => console.log(
+         JSON.stringify({
+            block_hash: block.hash,
+            message: "Decrypted data",
+            data: blockData,
+        }, null, 2)
+    ));
 
 }
 

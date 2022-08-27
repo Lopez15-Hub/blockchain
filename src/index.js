@@ -7,24 +7,16 @@ import { Blockchain } from './blockchain.js';
 const createPerson = (personData) => new PersonModel(personData.name, personData.rut, personData.age, personData.country);
 
 
-const person = createPerson(
+const person = createPerson({ "name": "Diego","rut": "18779897-2","age": 22, "country": "CHL"});
+const firstBlock = new BlockModel(person)
 
-  {
-    "name": "Diego",
-    "rut": "18779897-2",
-    "age": 22,
-    "country": "CHL"
-  }
 
-);
-const b1 = new BlockModel(person)
 async function run(){
-
-
   const blockChain =  new Blockchain();
-  await blockChain.addNewBlock(b1);
+  await blockChain.addNewBlock(firstBlock);
   blockChain.print();
 
 }
+
 run();
 
