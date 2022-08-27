@@ -10,7 +10,7 @@ export class Blockchain {
   }
 
   createGenesisBlock = () => new BlockModel({ data: "Genesis Block" });
-
+  generateNewHash=(newBlock)=>SHA256(JSON.stringify(newBlock)).toString();
 
   async initializeChain() {
 
@@ -27,15 +27,15 @@ export class Blockchain {
 
       newBlock.height = self.chain.length;
       newBlock.timestamp = Date.now();
-
       if (self.chain.length > 0) newBlock.previousHash = self.chain[self.chain.length - 1].hash;
 
+      
       const errors = self.validateChain();
-
       if (errors.length > 0) reject(new Error("The chain is not valid:", errors));
 
 
-      newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();
+
+      newBlock.hash = self.generateNewHash(newBlock)
       self.chain.push(newBlock);
 
       resolve(newBlock);
@@ -48,17 +48,22 @@ export class Blockchain {
     let self = this;
     const errors = [];
 
+    
     return new Promise(async (resolve, _) => {
+      
       self.chain.map(async (block) => {
+        
         try {
-          let isValid = await block.validateBlock();
-          if (!isValid) errors.push(new Error(`Invalid block: ${block}`));
+          
+          let blockIsValid = await block.validate();
+          
+          if (!blockIsValid) errors.push(new Error(`Invalid block: ${block}`));
 
         } catch (error) {
           errors.push(error);
         }
-        resolve(errors);
       })
+      resolve(errors);
     });
 
 
@@ -69,10 +74,14 @@ export class Blockchain {
     let self = this;
 
     for (let block of self.chain) {
+
       console.log(block.toString());
-      // console.log("______________________________________________\n");
+
+      console.log("______________________________________________\n");
+      console.log("____________________DECRYPTED DATA__________________\n");
+      console.log("______________________________________________\n");
             
-      // console.log(block.decryptData(block));
+      console.log(block.decryptData(block));
 
     }
 
