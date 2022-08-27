@@ -65,7 +65,7 @@ export class BlockModel {
             block_hash: block.hash,
             message: "Decrypted data",
             data: blockData,
-        }, null, 2)
+        }, null, 4)
     ));
 
 }
